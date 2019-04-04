@@ -31,36 +31,20 @@
 #include <sys/sem.h>
 #include <openssl/md5.h>
 #include "openssl/sha.h"
+#include <mysql/mysql.h>
 #define SALT_STR_LEN 10
 #define TOKEN_LEN 20
+#define THREAD_NUM 30
+#define QUE_NUM 100
+#define LISTEN_IP "192.168.5.208"
+#define LISTEN_PORT "8888"
+int mysqlQuery(char *que);
 int GenerateStr(char*);
-int passedSHA512(char *passwd,int len,char *salt);
-typedef struct{
-    int userID;
-    char salt[SALT_STR_LEN+1];
-    char passSHA[64];
-    char token[TOKEN_LEN];
-}user;
+int passedSHA512(unsigned char *passwd,int len,char *salt);
+int userReg(char*,char*,unsigned char*,char*,char*);
+int mysqlUsername(char *username,char *salt,char *passwd,char*);//依靠用户名查询salt和密码，用户登入使用
+int MD5Token(int num,char* tmp,...);
 #define args_check(argc,num) {if(argc!=num) {printf("error args\n");return -1;}}
 #define ERROR_CHECK(ret,retval,funcname) {if(ret==retval) {perror(funcname);return -1;}}
 #define THREAD_ERROR_CHECK(ret,funcname) {if(ret != 0) {printf("%s failed %s\n",funcname,strerror(ret));return -1;}}
-
-typedef struct{
-	pid_t pid;
-	int fd;
-	short busy;//代表子进程是否忙碌,0代表不忙碌，1代表忙碌
-}Process_Data;
-//小火车
-typedef struct{
-	int dataLen;
-	char buf[1000];
-}train;
-int makeChild(Process_Data *p,int processNum);
-void childHandle(int);
-int tcpInit(int*,char*,char*);
-int sendFd(int,int);
-int recvFd(int,int*);
-int tranFile(int);
-int sendCycle(int,char*,int);
-int recvCycle(int,char*,int);
 #define FILENAME "file"

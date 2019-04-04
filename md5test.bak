@@ -1,0 +1,10 @@
+#include "include/factory.h"
+
+int main()
+{
+    char md5[32]="hello";
+    MD5Token(3,md5,"world","byebye");
+    puts(md5);
+    return 0;
+}
+
