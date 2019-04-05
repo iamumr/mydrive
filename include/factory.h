@@ -14,4 +14,6 @@ void factoryInit(pFactory_t,int,int);
 void factoryStart(pFactory_t);
 int tcpInit(int *,char *,char*);
 int userCreat(pNode_t* pcur);
+int userLogin(pNode_t* pcur);
+int mysqlToken(char *user_token,char* user_id,int *expir_time);
 #endif

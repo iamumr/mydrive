@@ -68,9 +68,12 @@ int userLogin(pNode_t* pcur)
     sendCycle((*pcur)->new_fd,(char*)&t,4+t.dataLen);
     //接收密文密码
     recvCycle((*pcur)->new_fd,(char*)&t.dataLen,sizeof(int));
+    memset(t.buf,0,sizeof(t.buf)); 
     recvCycle((*pcur)->new_fd,(char*)&t.buf,t.dataLen);
     //比对并返回
     char user_name[255]={0};
+    if(strcmp(t.buf,passwd)==0)
+    {
     strcpy(user_name,(*pcur)->dir);
     time_t curtime;
     time(&curtime);
@@ -79,10 +82,19 @@ int userLogin(pNode_t* pcur)
     memset(t.buf,0,sizeof(t.buf));
     strcpy(t.buf,user_name);
     sendCycle((*pcur)->new_fd,(char*)&t,4+t.dataLen);
+    }else{
+        t.dataLen=0;
+        sendCycle((*pcur)->new_fd,(char*)&t,4);
+        return -1; 
+    }
     //数据库保存token信息
     char query[2000]={0};
-    sprintf(query,"INSERT INTO `user_token`(`user_id`,`user_token`,`expir_time`) VALUES('%s','%s','%ld')",user_id,user_name,time(NULL)+86400);
+    sprintf(query,"REPLACE INTO `user_token`(`user_id`,`user_token`,`expir_time`) VALUES('%s','%s','%ld')",user_id,user_name,time(NULL)+86400);
+    //printf("%ld\n",time(NULL)+863000); 
     int tmp=mysqlQuery(query);
+	sprintf(t.buf,"%d",tmp);
+	t.dataLen=sizeof(t.buf);
+	sendCycle((*pcur)->new_fd,(char*)&t,4+t.dataLen);
     if(0==tmp)
     {
         printf("客户端登入成功\n");

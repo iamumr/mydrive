@@ -63,6 +63,8 @@ void* downLoadFile(void *p)
                 //t.dataLen=sizeof(t.buf);
                 //sendCycle((*pcur).new_fd,(char*)&t,4+t.dataLen);
                 break;
+            case 1:
+                userLogin(&pcur);
             }
 			free(pcur);
 		}

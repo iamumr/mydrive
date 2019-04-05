@@ -64,3 +64,40 @@ int mysqlUsername(char *username,char *salt,char *passwd,char *user_id)//输入c
         return 0;//查询成功
     }
 }
+
+int mysqlToken(char *user_token,char* user_id,int *expir_time)//输入char参数，获取salt及密码
+{
+    MYSQL *conn;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    char *server="localhost";
+    char *user="root";
+    char* password="liliyang1995";
+    char* database="mydrive";
+    conn=mysql_init(NULL);
+    if(!mysql_real_connect(conn,server,user,password,database,0,NULL,0))
+    {
+        printf("Error connecting to database:%s\n",mysql_error(conn));
+    }
+    char query[2000]={0};
+    sprintf(query,"select * from users where user_token = '%s'",user_token);
+    int t=mysql_query(conn,query);
+    if(t){
+        return -1;//查询失败
+    }else{
+        res=mysql_use_result(conn);
+        if(res)
+        {
+            while((row=mysql_fetch_row(res))!=NULL)
+            {
+                *expir_time=atoi(row[2]);
+                strcpy(user_id,row[0]);
+            }
+        }else{
+            mysql_free_result(res);
+            return 1;//查询成功但token不存在
+        }
+        mysql_free_result(res);
+        return 0;//查询成功
+    }
+}
