@@ -1,19 +1,36 @@
-#ifndef __FACTORY_H__
-#define __FACTORY_H__
-#include "func.h"
+#ifndef __PTHREAD_H__
+#define __PTHREAD_H__
+
+
 #include "work_que.h"
-#include "tranfile.h"
-typedef struct{
-	pthread_t *pthid;//存储线程ID的起始地址
-	int threadNum;//要创建的线程数目
-	pthread_cond_t cond;//每个线程都要使用的条件变量
-	Que_t que;//生产者，消费者操作的队列
-	short startFlag;//工厂启动标志
-}Factory_t,*pFactory_t;
-void factoryInit(pFactory_t,int,int);
-void factoryStart(pFactory_t);
-int tcpInit(int *,char *,char*);
-int userCreat(pNode_t* pcur);
-int userLogin(pNode_t* pcur);
-int mysqlToken(char *user_token,char* user_id,int *expir_time);
+#include <deque>
+
+
+class factory
+{
+public:
+    factory()=delete;
+    factory(int threadnum);
+    ~factory();
+    void start();
+    int stop_all();
+    int get_task_size();
+    int add_task(task* t_task);
+
+protected:
+    static void* thread_func(void* thread_data);
+    int move_to_idle(pthread_t id);
+    int move_to_busy(pthread_t id);
+    int create();
+
+private:
+    std::deque<task*> m_task_list;
+    bool shutdown;
+    int m_thread_num;
+    pthread_t* pthread_id;
+
+    pthread_mutex_t m_mutex;
+    pthread_cond_t m_cond;
+};
+
 #endif

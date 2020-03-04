@@ -1,4 +1,14 @@
-#define _GNU_SOURCE
+#ifndef __FUNC_H__
+#define __FUNC_H__
+
+#include "Epoll.h"
+#include "tcp.h"
+#include "factory.h"
+#include "logger.h"
+#include "transfile.h"
+#include "work_que.h"
+
+//linux
 #include <sys/mman.h>
 #include <errno.h>
 #include <sys/epoll.h>
@@ -29,22 +39,34 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+
+//openssl
 #include <openssl/md5.h>
 #include "openssl/sha.h"
-#include <mysql/mysql.h>
+
+//mysql
+#include "mysql/mysql.h"
+#include<stdarg.h>
+
+//c++库
+#include <iostream>
+#include <deque>
+#include <string>
+#include <map>
+#include <memory>
+
 #define SALT_STR_LEN 10
 #define TOKEN_LEN 20
 #define THREAD_NUM 30
 #define QUE_NUM 100
-#define LISTEN_IP "192.168.5.208"
-#define LISTEN_PORT "8888"
-int mysqlQuery(char *que);
-int GenerateStr(char*);
-int passedSHA512(unsigned char *passwd,int len,char *salt);
-int userReg(char*,char*,unsigned char*,char*,char*);
-int mysqlUsername(char *username,char *salt,char *passwd,char*);//依靠用户名查询salt和密码，用户登入使用
-int MD5Token(int num,char* tmp,...);
+#define LISTEN_IP "172.17.23.240"
+#define LISTEN_PORT "8889"
+#define WORK_DIR "/tmp/mydrive"
+
+
 #define args_check(argc,num) {if(argc!=num) {printf("error args\n");return -1;}}
 #define ERROR_CHECK(ret,retval,funcname) {if(ret==retval) {perror(funcname);return -1;}}
 #define THREAD_ERROR_CHECK(ret,funcname) {if(ret != 0) {printf("%s failed %s\n",funcname,strerror(ret));return -1;}}
 #define FILENAME "file"
+
+#endif

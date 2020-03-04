@@ -1,24 +1,42 @@
-#ifndef __WORK_QUE__
-#define __WORK_QUE__
-#include "func.h"
+#ifndef __WORK_QUE_H__
+#define __WORK_QUE_H__
 
-typedef struct tag_node
+#include <string>
+#include <iostream>
+#include "transfile.h"
+#include <sys/socket.h>
+#include <unistd.h>
+
+class task
 {
-	int new_fd;
-    int token;//用户识别码
-    int codeNum;//操作码
-    char dir[2000];//操作路径
-    struct tag_node *pNext;
-}Node_t,*pNode_t;
+protected:
+    std::string m_task;
+    void* m_ptr_data;
+public:
+    task()=default;
+    task(std::string a):m_task(a),m_ptr_data(NULL){}
+    virtual ~task() {}
+    virtual int Run()=0;
+    void set_data(void* data);
 
-typedef struct{
-	pNode_t queHead,queTail;
-	int queCapacity;//队列容量
-	int queSize;//队列实时大小
-	pthread_mutex_t mutex;
-}Que_t,*pQue_t;
-void queInit(pQue_t,int);
-void queInsert(pQue_t,pNode_t);
-int queGet(pQue_t,pNode_t*);
+    
+};
+
+class mytask:public task
+{
+public:
+    mytask()=default;
+    int Run();
+    ~mytask() {}
+};
+
+class task_file:public task
+{
+public:
+    task_file()=default;
+    int Run();
+    ~task_file() {}
+};
+
 #endif
 
